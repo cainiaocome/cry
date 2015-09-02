@@ -1,24 +1,34 @@
-package simplersa
+package main
 
-import "log"
+//import "log"
 import "crypto/rsa"
 import "crypto/rand"
-import "../key"
+import "encoding/base64"
 
-func Simplersabase64(msg_to_enc string) {
-	//msg := "ip:127.0.0.1 username:root password:jialin,0204"
-    msg := msg_to_enc
-	private_key := key.Get_private_key()
+// rsa and then base64, operate on []byte
+func RsaBase64(msg_to_enc []byte) (msg_encrypted string, err error) {
+	private_key := get_private_key()
 	publick_key := private_key.PublicKey
 
-	encrypted_msg, err := rsa.EncryptPKCS1v15(rand.Reader, &publick_key, []byte(msg))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	new_msg, err := rsa.DecryptPKCS1v15(rand.Reader, private_key, encrypted_msg)
-	if err != nil {
-		log.Fatal(err.Error())
-	} else {
-		log.Printf("%s\n", new_msg)
-	}
+	msg_rsaed, err := rsa.EncryptPKCS1v15(rand.Reader, &publick_key, msg_to_enc)
+    if err!=nil {
+        return
+    }
+    msg_rsaed_base64ed := base64.StdEncoding.EncodeToString(msg_rsaed)
+    msg_encrypted = msg_rsaed_base64ed
+    return
+}
+// dont put it in client
+// debase4 and then dersa, return []byte, well, mostly should be json
+func DeRsaBase64(msg_encrypted string) (msg_decrypted []byte, err error) {
+	private_key := get_private_key()
+	//publick_key := private_key.PublicKey
+
+	msg_debase64ed, err := base64.StdEncoding.DecodeString(msg_encrypted)
+    if err!=nil {
+        return
+    }
+	msg_debase64ed_dersaed, err := rsa.DecryptPKCS1v15(rand.Reader, private_key, msg_debase64ed)
+    msg_decrypted = msg_debase64ed_dersaed
+    return
 }

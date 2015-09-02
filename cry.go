@@ -10,7 +10,6 @@ import "unicode"
 import "time"
 
 import "github.com/cainiaocome/easyssh"
-//import "./cry"
 
 type unit struct {
     ip string
@@ -72,11 +71,21 @@ func brute() {
     }
 }
 func main() {
-    goroutine_contol = make(chan int, 100)
-    result_report = make(chan unit, 3)
-    go brute()
-    for i:=0;i<1e9;i++{
-        result := <-result_report
-        log.Println(i, result.password, result.err, result.mem)
+    //goroutine_contol = make(chan int, 100)
+    //result_report = make(chan unit, 3)
+    //go brute()
+    //for i:=0;i<1e9;i++{
+    //    result := <-result_report
+    //    log.Println(i, result.password, result.err, result.mem)
+    //}
+    msg := "nice boy"
+    msg_enc,err := RsaBase64([]byte(msg))
+    if err!=nil {
+        log.Fatal(err.Error())
     }
+    msg_dec,err := DeRsaBase64(msg_enc)
+    if err!=nil {
+        log.Fatal(err.Error())
+    }
+    log.Println(string(msg_dec))
 }
