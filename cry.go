@@ -4,7 +4,7 @@ package main
 import "log"
 import "strings"
 import "math/big"
-import mrand "math/rand"
+//import mrand "math/rand"
 import crand "crypto/rand"
 import "unicode"
 import "time"
@@ -40,9 +40,6 @@ func randString(n int) string {
 }
 
 func auth_per_ip_user_password(iup unit) {
-    if mrand.Intn(100)==1{
-        iup.password = "jialin,0204"
-    }
     res_iup := iup
 	// Create MakeConfig instance with remote username, server address and path to private key.
 	ssh := &easyssh.MakeConfig{
@@ -70,14 +67,8 @@ func brute() {
         goroutine_contol <- 1
     }
 }
-func main() {
-    //goroutine_contol = make(chan int, 100)
-    //result_report = make(chan unit, 3)
-    //go brute()
-    //for i:=0;i<1e9;i++{
-    //    result := <-result_report
-    //    log.Println(i, result.password, result.err, result.mem)
-    //}
+
+func test_rsa() {
     msg := "nice boy"
     msg_enc,err := RsaBase64([]byte(msg))
     if err!=nil {
@@ -88,4 +79,13 @@ func main() {
         log.Fatal(err.Error())
     }
     log.Println(string(msg_dec))
+}
+func main() {
+    goroutine_contol = make(chan int, 100)
+    result_report = make(chan unit, 3)
+    go brute()
+    for i:=0;i<1e9;i++{
+        result := <-result_report
+        log.Println(i, result.password, result.err, result.mem)
+    }
 }
